@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT API Example</title>
+</head>
+<body>
+    <h2>ChatGPT API Webpage</h2>
+
+    <label for="systemMessage">System Message:</label>
+    <textarea id="systemMessage" rows="4" cols="50">You are a helpful assistant.</textarea>
+    
+    <br><br>
+
+    <label for="userMessage">User Message:</label>
+    <textarea id="userMessage" rows="4" cols="50">Who was Albert Einstein?</textarea>
+    
+    <br><br>
+
+    <button onclick="queryAPI()">Send to ChatGPT</button>
+    
+    <br><br>
+
+    <label for="response">Response:</label>
+    <textarea id="response" rows="10" cols="50" readonly></textarea>
+
+    <script>
+        async function queryAPI() {
+            const systemContent = document.getElementById('systemMessage').value;
+            const userContent = document.getElementById('userMessage').value;
+
+            const responseArea = document.getElementById('response');
+
+            // Define API Endpoint and Headers
+            const endpoint = 'https://api.openai.com/v1/chat/completions';
+            const headers = {
+                'Authorization': 'Bearer <Your OpenAI API key, starts with sk->', 
+                'Content-Type': 'application/json'
+            };
+
+            // Request Body
+            const body = {
+                model: "gpt-3.5-turbo",
+                messages: [
+                    {
+                        role: "system",
+                        content: systemContent
+                    },
+                    {
+                        role: "user",
+                        content: userContent
+                    }
+                ]
+            };
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(body)
+                });
+                
+                const data = await response.json();
+                responseArea.value = data.choices[0].message.content;
+            } catch (error) {
+                responseArea.value = "Error: " + error;
+            }
+        }
+    </script>
+</body>
+</html>
